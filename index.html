@@ -3,150 +3,163 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Excel Pro - 全能职场外挂</title>
+    <title>Excel Pro - 职场全能手册</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;700;900&display=swap');
-        body { font-family: 'Inter', sans-serif; }
-        .card { transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); cursor: pointer; }
-        .card:hover { transform: translateY(-8px); box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04); }
-        .details { max-height: 0; overflow: hidden; transition: max-height 0.3s ease-out; }
-        .card.open .details { max-height: 500px; padding-top: 1.5rem; margin-top: 1.5rem; border-top: 1px solid #f1f5f9; }
+        body { font-family: 'Inter', -apple-system, sans-serif; }
+        .card { transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); cursor: pointer; border: 1px solid #e2e8f0; }
+        .card:hover { transform: translateY(-5px); box-shadow: 0 20px 25px -5px rgba(0,0,0,0.1); border-color: #10b981; }
+        .details { max-height: 0; overflow: hidden; transition: max-height 0.3s ease; }
+        .card.open .details { max-height: 500px; padding-top: 1.25rem; margin-top: 1.25rem; border-top: 1px solid #f1f5f9; }
         .tab-active { background: #10b981; color: white; box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3); }
         .filter-active { background: #10b981 !important; color: white !important; }
-        ::-webkit-scrollbar { width: 8px; }
-        ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 10px; }
     </style>
 </head>
-<body class="bg-slate-50 min-h-screen">
+<body class="bg-slate-50 min-h-screen pb-20">
 
-    <nav class="bg-slate-900 text-white shadow-2xl sticky top-0 z-30">
+    <nav class="bg-slate-900 text-white shadow-2xl sticky top-0 z-30 border-b border-emerald-500/20">
         <div class="container mx-auto px-6 py-6">
             <div class="flex flex-col lg:flex-row justify-between items-center gap-6">
                 <div class="flex items-center gap-4">
-                    <div class="w-14 h-14 bg-emerald-500 rounded-2xl flex items-center justify-center font-black text-3xl shadow-lg rotate-3">E</div>
+                    <div class="w-12 h-12 bg-emerald-500 rounded-2xl flex items-center justify-center font-black text-2xl shadow-lg shadow-emerald-500/20">E</div>
                     <div>
-                        <h1 class="text-2xl font-black tracking-tight leading-none">EXCEL <span class="text-emerald-400">PRO</span></h1>
-                        <p class="text-[10px] text-slate-500 mt-1 tracking-[0.3em] uppercase font-bold">The Ultimate Toolbox</p>
+                        <h1 class="text-2xl font-black tracking-tight uppercase">Excel <span class="text-emerald-400">Toolkit</span></h1>
+                        <p class="text-[10px] text-slate-500 font-bold tracking-[0.2em]">VERSION 2026.03</p>
                     </div>
                 </div>
 
-                <div class="relative w-full lg:w-1/3 group">
-                    <input type="text" id="searchInput" placeholder="搜索函数、快捷键或场景..." 
-                        class="w-full p-4 pl-12 rounded-2xl text-slate-800 outline-none ring-4 ring-slate-800 focus:ring-emerald-500/40 transition-all bg-white shadow-inner">
-                    <svg class="w-6 h-6 absolute left-4 top-4 text-slate-400 group-focus-within:text-emerald-500 transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg>
+                <div class="relative w-full lg:w-1/3">
+                    <input type="text" id="searchInput" placeholder="搜索功能、场景或快捷键..." 
+                        class="w-full p-3.5 pl-12 rounded-2xl text-slate-800 outline-none bg-white shadow-inner focus:ring-2 focus:ring-emerald-500 transition-all">
+                    <svg class="w-5 h-5 absolute left-4 top-4 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg>
                 </div>
 
-                <div class="flex bg-slate-800 p-1.5 rounded-2xl shadow-inner border border-slate-700">
-                    <button id="tabFunc" onclick="switchMode('func')" class="px-6 py-2.5 rounded-xl text-sm font-bold transition-all tab-active">常用函数</button>
-                    <button id="tabKey" onclick="switchMode('key')" class="px-6 py-2.5 rounded-xl text-sm font-bold transition-all text-slate-400 hover:text-white">快捷键图谱</button>
+                <div class="flex bg-slate-800 p-1 rounded-xl border border-slate-700">
+                    <button id="tabFunc" onclick="switchMode('func')" class="px-6 py-2 rounded-lg text-xs font-bold transition-all tab-active">实战函数</button>
+                    <button id="tabKey" onclick="switchMode('key')" class="px-6 py-2 rounded-lg text-xs font-bold transition-all text-slate-400 hover:text-white">大神快捷键</button>
                 </div>
             </div>
             
-            <div id="filterWrapper" class="flex flex-wrap gap-2 mt-8 justify-center transition-all duration-300">
-                <button onclick="filterCat('all')" class="cat-btn px-6 py-2 rounded-full bg-slate-800 text-[11px] font-black uppercase tracking-widest hover:bg-slate-700 transition-all filter-active">All</button>
-                <button onclick="filterCat('查找/引用')" class="cat-btn px-6 py-2 rounded-full bg-slate-800 text-[11px] font-black uppercase tracking-widest hover:bg-slate-700 transition-all text-blue-400">查找/引用</button>
-                <button onclick="filterCat('实战套路')" class="cat-btn px-6 py-2 rounded-full bg-slate-800 text-[11px] font-black uppercase tracking-widest border border-emerald-500/30 text-emerald-400">🔥 实战套路</button>
-                <button onclick="filterCat('统计/数学')" class="cat-btn px-6 py-2 rounded-full bg-slate-800 text-[11px] font-black uppercase tracking-widest text-purple-400">统计/数学</button>
-                <button onclick="filterCat('逻辑/文本')" class="cat-btn px-6 py-2 rounded-full bg-slate-800 text-[11px] font-black uppercase tracking-widest text-orange-400">逻辑/文本</button>
+            <div id="filterWrapper" class="flex flex-wrap gap-2 mt-6 justify-center">
+                <button onclick="filterCat('all')" class="cat-btn px-4 py-1.5 rounded-full bg-slate-800 text-[10px] font-bold uppercase tracking-wider filter-active">全部展示</button>
+                <button onclick="filterCat('🔥 实战套路')" class="cat-btn px-4 py-1.5 rounded-full bg-slate-800 text-[10px] font-bold uppercase tracking-wider text-emerald-400 border border-emerald-500/30">🔥 实战套路</button>
+                <button onclick="filterCat('查找/引用')" class="cat-btn px-4 py-1.5 rounded-full bg-slate-800 text-[10px] font-bold uppercase tracking-wider text-blue-400">查找/引用</button>
+                <button onclick="filterCat('逻辑/文本')" class="cat-btn px-4 py-1.5 rounded-full bg-slate-800 text-[10px] font-bold uppercase tracking-wider text-orange-400">逻辑/文本</button>
+                <button onclick="filterCat('统计/数学')" class="cat-btn px-4 py-1.5 rounded-full bg-slate-800 text-[10px] font-bold uppercase tracking-wider text-purple-400">统计/数学</button>
             </div>
         </div>
     </nav>
 
-    <main class="container mx-auto px-6 py-12">
-        <div id="mainGrid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-            </div>
+    <main class="container mx-auto px-6 py-10">
+        <div id="mainGrid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"></div>
     </main>
 
     <script>
-        // --- 数据库 ---
         const functions = [
-            // 实战套路
-            { n: '提取生日', c: '实战套路', d: '从身份证中提取 8 位生日。', s: '=TEXT(MID(A2,7,8),"0000-00-00")', info: 'MID提取身份证第7位起8个数字，TEXT转为日期格式。', color: 'border-emerald-500' },
-            { n: '跨表匹配', c: '查找/引用', d: '根据姓名从另一张表自动提取数据。', s: '=VLOOKUP(A2, 员工表!A:E, 3, 0)', info: 'A2是查找值，"员工表!A:E"是目标区域，3是列号，0是精确匹配。', color: 'border-blue-500' },
-            { n: '提取手机号', c: '实战套路', d: '从杂乱文本中提取11位手机号。', s: '=MID(A2, MIN(FIND({0,1,2,3,4,5,6,7,8,9}, A2&"0123456789")), 11)', info: '复杂的数组公式，自动定位第一个数字位置并截取11位。', color: 'border-emerald-500' },
-            { n: '多条件求和', c: '统计/数学', d: '满足多个条件下计算总和。', s: '=SUMIFS(求和区, 条件区1, 条件1, ...)', info: '求和区在最前，后面成对出现条件区和条件。', color: 'border-purple-500' },
-            { n: '按颜色汇总', c: '实战套路', d: '对筛选后的可见行进行求和。', s: '=SUBTOTAL(9, 区域)', info: '先按颜色筛选，公式会自动忽略隐藏行进行求和。', color: 'border-emerald-500' },
-            { n: '屏蔽所有错误', c: '逻辑/文本', d: '让表格中的错误代码变漂亮。', s: '=IFERROR(你的公式, "")', info: '包裹在任何公式外，报错时显示为空白或指定文字。', color: 'border-orange-500' },
-            { n: 'XLOOKUP', c: '查找/引用', d: '新代查找之王，取代VLOOKUP。', s: '=XLOOKUP(值, 查找区, 结果区)', info: '不需要数列号，支持从右往左查找，Office 365 必会。', color: 'border-blue-500' }
+            // --- 实战套路 (增加更多) ---
+            { n: '提取生日', c: '🔥 实战套路', d: '从身份证中提取 8 位生日。', s: '=TEXT(MID(A2,7,8),"0000-00-00")', info: 'A2为身份证号单元格。MID截取第7位起的8个数字。', color: 'border-emerald-500' },
+            { n: '算周岁', c: '🔥 实战套路', d: '根据身份证精准计算年龄。', s: '=DATEDIF(TEXT(MID(A2,7,8),"0-00-00"),TODAY(),"y")', info: '结合DATEDIF函数，结果随日期自动更新。', color: 'border-emerald-500' },
+            { n: '性别识别', c: '🔥 实战套路', d: '根据身份证第17位判断男女。', s: '=IF(MOD(MID(A2,17,1),2),"男","女")', info: '身份证第17位奇数为男，偶数为女。', color: 'border-emerald-500' },
+            { n: '屏蔽错误', c: '🔥 实战套路', d: '让#N/A等错误显示为指定内容。', s: '=IFERROR(你的公式, "暂无数据")', info: '外套函数，让报表更美观。', color: 'border-emerald-500' },
+            { n: '两表对账', c: '🔥 实战套路', d: '快速找出A表缺失于B表的内容。', s: '=IF(COUNTIF(Sheet2!A:A, A2)>0, "已匹配", "缺失")', info: '常用于核对名单、查缺补漏。', color: 'border-emerald-500' },
+            { n: '提取手机号', c: '🔥 实战套路', d: '从乱码中提取11位手机号。', s: '=MID(A2,SEARCH("1",A2),11)', info: '基础版：假设手机号以1开头且为11位。', color: 'border-emerald-500' },
+            { n: '金额大写', c: '🔥 实战套路', d: '将数字金额转为人民币大写。', s: '=NUMBERSTRING(A2,2)', info: '隐藏函数，直接把123变成壹佰贰拾叁。', color: 'border-emerald-500' },
+
+            // --- 查找引用 (增加更多) ---
+            { n: 'XLOOKUP', c: '查找/引用', d: '新代查找王，支持逆向查找。', s: '=XLOOKUP(值, 查找区, 结果区)', info: '不需要数列号，不会因插入行列报错。', color: 'border-blue-500' },
+            { n: 'VLOOKUP', c: '查找/引用', d: '职场人必备的经典纵向查找。', s: '=VLOOKUP(值, 区域, 列号, 0)', info: '注意：第四个参数通常填0代表精确匹配。', color: 'border-blue-500' },
+            { n: 'INDEX+MATCH', c: '查找/引用', d: '黄金组合，解决左搜难题。', s: '=INDEX(结果区, MATCH(值, 查找区, 0))', info: '比VLOOKUP更强大灵活的组合。', color: 'border-blue-500' },
+            { n: 'UNIQUE', c: '查找/引用', d: '一键提取区域中的唯一值。', s: '=UNIQUE(区域)', info: '动态数组，会自动向下溢出显示结果。', color: 'border-blue-500' },
+            { n: 'FILTER', c: '查找/引用', d: '动态筛选出符合条件的整块数据。', s: '=FILTER(区域, 条件)', info: '办公自动化神器，取代手动筛选。', color: 'border-blue-500' },
+            { n: 'INDIRECT', c: '查找/引用', d: '将文本转为单元格引用。', s: '=INDIRECT("Sheet1!A"&B1)', info: '多级下拉菜单、跨表动态引用的核心。', color: 'border-blue-500' },
+
+            // --- 逻辑文本 (增加更多) ---
+            { n: 'IFS', c: '逻辑/文本', d: '多级判断，告别 IF 嵌套。', s: '=IFS(成绩>=90,"优",成绩>=60,"及格")', info: '按顺序判断，直到满足条件。', color: 'border-orange-500' },
+            { n: 'TEXTJOIN', c: '逻辑/文本', d: '带分隔符连接多个文本。', s: '=TEXTJOIN(",", TRUE, 区域)', info: '合并姓名、地址等场景极度好用。', color: 'border-orange-500' },
+            { n: 'SUBSTITUTE', c: '逻辑/文本', d: '替换指定位置或字符。', s: '=SUBSTITUTE(文本, 旧字符, 新字符)', info: '批量修改、电话号打马赛克常用。', color: 'border-orange-500' },
+            { n: 'TRIM', c: '逻辑/文本', d: '剔除文本两端及中间多余空格。', s: '=TRIM(A2)', info: '解决VLOOKUP对不上的隐藏凶手。', color: 'border-orange-500' },
+            { n: 'TEXT', c: '逻辑/文本', d: '万能转换，数值转特定格式。', s: '=TEXT(日期, "aaaa")', info: '"aaaa"代表显示为星期。', color: 'border-orange-500' },
+
+            // --- 统计数学 (增加更多) ---
+            { n: 'SUMIFS', c: '统计/数学', d: '满足多条件的求和。', s: '=SUMIFS(求和区, 区域1, 条件1...)', info: '财务报表最核心函数。', color: 'border-purple-500' },
+            { n: 'COUNTIFS', c: '统计/数学', d: '满足多条件的计数。', s: '=COUNTIFS(区域1, 条件1...)', info: '用于考勤、统计名单个数。', color: 'border-purple-500' },
+            { n: 'SUBTOTAL', c: '统计/数学', d: '只统计筛选后可见的数据。', s: '=SUBTOTAL(9, 区域)', info: '9代表求和，它会自动忽略隐藏行。', color: 'border-purple-500' },
+            { n: 'SUMPRODUCT', c: '统计/数学', d: '乘积之和，支持数组逻辑。', s: '=SUMPRODUCT((条件区=条件)*数据区)', info: '万能函数，可替代几乎所有统计。', color: 'border-purple-500' }
         ];
 
         const shortcuts = [
-            { n: '快速筛选', c: '效率', d: '一键开启或关闭筛选。', s: 'Ctrl + Shift + L', info: '不需要去菜单里点，瞬间给表头加漏斗。', color: 'border-slate-800' },
-            { n: '一键求和', c: '效率', d: '自动识别上方或左侧数据求和。', s: 'Alt + =', info: '在数据下方按此键，自动生成 SUM 公式。', color: 'border-slate-800' },
-            { n: '强制换行', c: '格式', d: '在单元格内进行手动换行。', s: 'Alt + Enter', info: '解决单元格文字挤在一起的问题。', color: 'border-slate-800' },
-            { n: '重复操作', c: '神技', d: '重复上一次的动作（如填色、插入）。', s: 'F4', info: '极速完成重复性的格式设置。', color: 'border-slate-800' },
-            { n: '粘贴为值', c: '效率', d: '只保留公式算出的结果。', s: 'Ctrl+Alt+V 然后按 V', info: '彻底告别公式变动导致的报错。', color: 'border-slate-800' }
+            { n: '快速筛选', c: '效率', d: '开关筛选漏斗。', s: 'Ctrl + Shift + L', info: '大神从不点菜单里的筛选。', color: 'border-slate-800' },
+            { n: '一键求和', c: '效率', d: '自动生成SUM公式。', s: 'Alt + =', info: '在数据底部或右侧一键求和。', color: 'border-slate-800' },
+            { n: '强制换行', c: '格式', d: '单元格内换行。', s: 'Alt + Enter', info: '解决文字排版拥挤。', color: 'border-slate-800' },
+            { n: '全选区域', c: '效率', d: '选中当前整块数据。', s: 'Ctrl + A', info: '比鼠标拖拽快100倍。', color: 'border-slate-800' },
+            { n: '重复上一步', c: '效率', d: '重复格式或动作。', s: 'F4', info: '重复刷色、插入行等操作。', color: 'border-slate-800' },
+            { n: '查看公式', c: '查阅', d: '切换公式/结果显示。', s: 'Ctrl + ~', info: '查错时一键看清所有公式逻辑。', color: 'border-slate-800' },
+            { n: '快速填充', c: '神技', d: '智能识别模式填数据。', s: 'Ctrl + E', info: '无需公式的“拆分/合并”神器。', color: 'border-slate-800' }
         ];
 
-        // --- 逻辑控制 ---
-        let currentMode = 'func'; 
-        let currentCat = 'all';
-        const grid = document.getElementById('mainGrid');
+        let mode = 'func';
+        let cat = 'all';
 
-        function switchMode(mode) {
-            currentMode = mode;
-            document.getElementById('tabFunc').classList.toggle('tab-active', mode==='func');
-            document.getElementById('tabKey').classList.toggle('tab-active', mode==='key');
-            document.getElementById('filterWrapper').style.display = mode==='func' ? 'flex' : 'none';
+        function switchMode(m) {
+            mode = m;
+            document.getElementById('tabFunc').classList.toggle('tab-active', m==='func');
+            document.getElementById('tabKey').classList.toggle('tab-active', m==='key');
+            document.getElementById('filterWrapper').style.display = m==='func' ? 'flex' : 'none';
             render();
         }
 
-        function filterCat(cat) {
-            currentCat = cat;
-            document.querySelectorAll('.cat-btn').forEach(btn => {
-                btn.classList.toggle('filter-active', btn.innerText.includes(cat) || (cat==='all' && btn.innerText==='ALL'));
+        function filterCat(c) {
+            cat = c;
+            document.querySelectorAll('.cat-btn').forEach(b => {
+                b.classList.toggle('filter-active', b.innerText.includes(c) || (c==='all' && b.innerText==='全部展示'));
             });
             render();
         }
 
         function render() {
+            const grid = document.getElementById('mainGrid');
+            const search = document.getElementById('searchInput').value.toLowerCase();
             grid.innerHTML = '';
-            const keyword = document.getElementById('searchInput').value.toLowerCase();
-            const data = currentMode === 'func' ? functions : shortcuts;
-
+            
+            const data = mode === 'func' ? functions : shortcuts;
             const filtered = data.filter(f => {
-                const matchSearch = f.n.toLowerCase().includes(keyword) || f.d.includes(keyword);
-                const matchCat = currentMode === 'key' || currentCat === 'all' || f.c === currentCat;
+                const matchSearch = f.n.toLowerCase().includes(search) || f.d.includes(search);
+                const matchCat = mode === 'key' || cat === 'all' || f.c === cat;
                 return matchSearch && matchCat;
             });
 
             filtered.forEach(f => {
                 const div = document.createElement('div');
-                div.className = `card bg-white p-8 rounded-[2rem] border-t-[12px] ${f.color} shadow-sm`;
+                div.className = `card bg-white p-6 rounded-3xl border-t-[8px] ${f.color}`;
                 div.onclick = (e) => { if(!e.target.closest('.copy-box')) div.classList.toggle('open'); };
                 div.innerHTML = `
-                    <div class="flex justify-between items-start mb-4">
-                        <span class="text-[10px] font-black text-slate-400 tracking-widest uppercase">${f.c}</span>
-                        <span class="text-xs text-slate-300">#${Math.floor(Math.random()*900+100)}</span>
+                    <div class="flex justify-between items-start mb-4 text-[10px] font-bold text-slate-400 uppercase tracking-widest">
+                        <span>${f.c}</span>
+                        <span>PRO TOOL</span>
                     </div>
-                    <h3 class="text-2xl font-black text-slate-800 mb-2">${f.n}</h3>
-                    <p class="text-slate-500 text-sm mb-6 leading-relaxed">${f.d}</p>
-                    
-                    <div class="copy-box bg-slate-50 p-5 rounded-2xl border border-slate-100 group relative active:scale-95 transition-all" onclick="copy('${f.s}')">
-                        <code class="text-emerald-600 font-mono text-sm font-bold block break-all pr-8">${f.s}</code>
-                        <div class="absolute right-4 top-5 text-slate-300 group-hover:text-emerald-500">
-                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7v8a2 2 0 002 2h6M8 7V5a2 2 0 012-2h4.586a1 1 0 01.707.293l4.414 4.414a1 1 0 01.293.707V15a2 2 0 01-2 2h-2M8 7H6a2 2 0 00-2 2v10a2 2 0 002 2h8a2 2 0 002-2v-2"></path></svg>
-                        </div>
+                    <h3 class="text-xl font-black text-slate-800 mb-2">${f.n}</h3>
+                    <p class="text-slate-500 text-xs mb-6 h-8">${f.d}</p>
+                    <div class="copy-box bg-slate-50 p-4 rounded-2xl border border-slate-100 group relative active:scale-95 transition-all" onclick="copy('${f.s}')">
+                        <code class="text-emerald-600 font-mono text-xs block pr-8">${f.s}</code>
+                        <svg class="w-4 h-4 absolute right-3 top-4 text-slate-300 group-hover:text-emerald-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7v8a2 2 0 002 2h6M8 7V5a2 2 0 012-2h4.586a1 1 0 01.707.293l4.414 4.414a1 1 0 01.293.707V15a2 2 0 01-2 2h-2M8 7H6a2 2 0 00-2 2v10a2 2 0 002 2h8a2 2 0 002-2v-2"></path></svg>
                     </div>
-
                     <div class="details">
-                        <div class="bg-emerald-50/50 p-4 rounded-2xl border border-emerald-100">
-                            <h4 class="text-[11px] font-black text-emerald-700 uppercase mb-2 tracking-tighter">Pro Tip / 使用说明</h4>
-                            <p class="text-xs text-slate-600 leading-relaxed">${f.info}</p>
+                        <div class="bg-emerald-50 p-4 rounded-xl border border-emerald-100 text-[11px] text-slate-600 leading-relaxed italic">
+                            💡 ${f.info}
                         </div>
                     </div>
-                    <div class="mt-4 flex justify-center"><div class="w-8 h-1 bg-slate-100 rounded-full group-hover:bg-emerald-200 transition-colors"></div></div>
+                    <div class="mt-4 text-center text-[9px] text-slate-300 font-bold uppercase tracking-tighter">Click to Expand info</div>
                 `;
                 grid.appendChild(div);
             });
         }
 
-        window.copy = (text) => {
-            navigator.clipboard.writeText(text);
+        window.copy = (t) => {
+            navigator.clipboard.writeText(t);
             const tip = document.createElement('div');
-            tip.className = "fixed bottom-10 left-1/2 -translate-x-1/2 bg-slate-900 text-white px-8 py-4 rounded-2xl shadow-2xl z-50 font-black text-sm border-b-4 border-emerald-500 animate-bounce";
-            tip.innerHTML = "✨ 已复制！速去粘贴实战";
+            tip.className = "fixed bottom-10 left-1/2 -translate-x-1/2 bg-slate-900 text-white px-6 py-3 rounded-2xl shadow-2xl z-50 font-bold text-xs animate-bounce border-b-4 border-emerald-500";
+            tip.innerHTML = "✨ 已复制公式，快去粘贴！";
             document.body.appendChild(tip);
             setTimeout(() => tip.remove(), 2000);
         };
