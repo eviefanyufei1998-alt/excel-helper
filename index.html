@@ -1,44 +1,41 @@
-const excelFunctions = [
-            // --- 查找与引用 ---
-            { name: 'XLOOKUP', category: '查找/引用', desc: '全能查找王，支持逆向、多列查找。', syntax: '=XLOOKUP(查找值, 查找数组, 返回数组)', tip: 'Office 365 专属，从此告别 VLOOKUP。' },
-            { name: 'VLOOKUP', category: '查找/引用', desc: '纵向查找，职场必备。', syntax: '=VLOOKUP(查找值, 区域, 列号, 0)', tip: '记得第四个参数填0代表精确匹配。' },
-            { name: 'INDEX', category: '查找/引用', desc: '返回表格或区域中的值。', syntax: '=INDEX(区域, 行号, [列号])', tip: '常与 MATCH 搭配使用。' },
-            { name: 'MATCH', category: '查找/引用', desc: '返回指定值在区域中的相对位置。', syntax: '=MATCH(查找值, 区域, 0)', tip: '返回的是序号而非内容。' },
-            { name: 'OFFSET', category: '查找/引用', desc: '以指定引用为参照系，偏移出新区域。', syntax: '=OFFSET(参照, 行偏移, 列偏移, 高, 宽)', tip: '动态图表的灵魂。' },
-            { name: 'INDIRECT', category: '查找/引用', desc: '将文本字符串变为真实的引用。', syntax: '=INDIRECT(文本地址)', tip: '常用于多级下拉菜单。' },
-            { name: 'UNIQUE', category: '查找/引用', desc: '提取唯一值（去重）。', syntax: '=UNIQUE(区域)', tip: '动态数组函数，自动溢出。' },
-            { name: 'FILTER', category: '查找/引用', desc: '根据条件筛选数据。', syntax: '=FILTER(区域, 条件)', tip: '配合 UNIQUE 使用效果极佳。' },
-            { name: 'SORT', category: '查找/引用', desc: '对区域内容排序。', syntax: '=SORT(区域, 索引, 顺序)', tip: '1为升序，-1为降序。' },
-            { name: 'HLOOKUP', category: '查找/引用', desc: '横向查找。', syntax: '=HLOOKUP(值, 区域, 行号, 0)', tip: '数据横着放时使用。' },
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Excel 函数小助手</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-50 min-h-screen p-5">
+    <div class="max-w-4xl mx-auto">
+        <header class="mb-8 text-center">
+            <h1 class="text-3xl font-bold text-green-600">Excel Master Tools</h1>
+            <p class="text-gray-500">点击公式即可自动复制</p>
+        </header>
+        <div id="grid" class="grid grid-cols-1 md:grid-cols-2 gap-6">
+            </div>
+    </div>
 
-            // --- 统计与数学 ---
-            { name: 'SUMIFS', category: '统计/数学', desc: '多条件求和。', syntax: '=SUMIFS(求和区, 条件区1, 条件1...)', tip: '求和区在第一位。' },
-            { name: 'COUNTIFS', category: '统计/数学', desc: '多条件计数。', syntax: '=COUNTIFS(条件区1, 条件1...)', tip: '统计个数神器。' },
-            { name: 'AVERAGEIFS', category: '统计/数学', desc: '多条件平均值。', syntax: '=AVERAGEIFS(均值区, 条件区1, 条件1...)', tip: '逻辑同 SUMIFS。' },
-            { name: 'SUMPRODUCT', category: '统计/数学', desc: '乘积之和。', syntax: '=SUMPRODUCT(数组1, 数组2)', tip: '万能函数，可做复杂多条件统计。' },
-            { name: 'SUBTOTAL', category: '统计/数学', desc: '分类汇总。', syntax: '=SUBTOTAL(代码, 区域)', tip: '代码9求和，109忽略隐藏行。' },
-            { name: 'ROUND', category: '统计/数学', desc: '四舍五入。', syntax: '=ROUND(数值, 位数)', tip: '0表示取整。' },
-            { name: 'INT', category: '统计/数学', desc: '向下取整。', syntax: '=INT(数值)', tip: '直接舍弃小数。' },
-            { name: 'MOD', category: '统计/数学', desc: '取余数。', syntax: '=MOD(被除数, 除数)', tip: '常用于判断奇偶。' },
-            { name: 'RANK.EQ', category: '统计/数学', desc: '排名。', syntax: '=RANK.EQ(值, 区域, 顺序)', tip: '计算名次。' },
-            { name: 'ABS', category: '统计/数学', desc: '绝对值。', syntax: '=ABS(数值)', tip: '负数转正数。' },
-
-            // --- 逻辑与文本 ---
-            { name: 'IF', category: '逻辑/文本', desc: '条件判断。', syntax: '=IF(条件, 真值, 假值)', tip: '基础逻辑核心。' },
-            { name: 'IFS', category: '逻辑/文本', desc: '多条件判断。', syntax: '=IFS(条件1, 值1...)', tip: '替代多重 IF 嵌套。' },
-            { name: 'IFERROR', category: '逻辑/文本', desc: '容错处理。', syntax: '=IFERROR(公式, 错误时显示)', tip: '隐藏 #N/A 必备。' },
-            { name: 'LEFT/RIGHT', category: '逻辑/文本', desc: '左右截取。', syntax: '=LEFT(文本, 长度)', tip: '提取前缀或后缀。' },
-            { name: 'MID', category: '逻辑/文本', desc: '中间截取。', syntax: '=MID(文本, 起始, 长度)', tip: '身份证提生日必备。' },
-            { name: 'LEN', category: '逻辑/文本', desc: '字符长度。', syntax: '=LEN(文本)', tip: '空格也计入长度。' },
-            { name: 'TEXT', category: '逻辑/文本', desc: '格式化转文本。', syntax: '=TEXT(值, "格式")', tip: '日期转周几神器。' },
-            { name: 'TEXTJOIN', category: '逻辑/文本', desc: '带分隔符连接。', syntax: '=TEXTJOIN(",", 1, 文本1...)', tip: '批量合并姓名首选。' },
-            { name: 'SUBSTITUTE', category: '逻辑/文本', desc: '替换文本。', syntax: '=SUBSTITUTE(文本, 旧文本, 新文本)', tip: '比查找替换更灵活。' },
-            { name: 'REPLACE', category: '逻辑/文本', desc: '位置替换。', syntax: '=REPLACE(文本, 起始, 长度, 新文本)', tip: '打马赛克常用。' },
-
-            // --- 日期与时间 ---
-            { name: 'TODAY', category: '日期/时间', desc: '今天日期。', syntax: '=TODAY()', tip: '动态更新。' },
-            { name: 'DATEDIF', category: '日期/时间', desc: '计算间隔。', syntax: '=DATEDIF(开始, 结束, "Y")', tip: '算年龄、工龄神器。' },
-            { name: 'EOMONTH', category: '日期/时间', desc: '月底日期。', syntax: '=EOMONTH(日期, 0)', tip: '算财务结算日。' },
-            { name: 'WEEKDAY', category: '日期/时间', desc: '星期几。', syntax: '=WEEKDAY(日期, 2)', tip: '2代表周一为起始。' },
-            { name: 'NETWORKDAYS', category: '日期/时间', desc: '工作日天数。', syntax: '=NETWORKDAYS(开始, 结束)', tip: '自动扣除周末。' }
+    <script>
+        const excelFunctions = [
+            { name: 'XLOOKUP', desc: '全能查找王，支持逆向查找。', syntax: '=XLOOKUP(查找值, 查找区, 结果区)' },
+            { name: 'VLOOKUP', desc: '纵向查找，匹配数据必备。', syntax: '=VLOOKUP(值, 区域, 列号, 0)' },
+            { name: 'SUMIFS', desc: '多条件求和。', syntax: '=SUMIFS(求和区, 条件区, 条件)' },
+            { name: 'DATEDIF', desc: '计算工龄、年龄。', syntax: '=DATEDIF(开始日, 结束日, "Y")' }
         ];
+
+        const grid = document.getElementById('grid');
+        excelFunctions.forEach(f => {
+            const card = document.createElement('div');
+            card.className = 'bg-white p-6 rounded-xl shadow-md border-l-4 border-green-500';
+            card.innerHTML = `
+                <h3 class="text-xl font-bold text-blue-600 mb-2">${f.name}</h3>
+                <p class="text-gray-600 text-sm mb-4">${f.desc}</p>
+                <code class="block bg-gray-100 p-2 text-pink-600 rounded cursor-pointer hover:bg-gray-200" 
+                      onclick="navigator.clipboard.writeText('${f.syntax}');alert('复制成功！')">${f.syntax}</code>
+            `;
+            grid.appendChild(card);
+        });
+    </script>
+</body>
+</html>
