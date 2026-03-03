@@ -3,39 +3,105 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Excel 函数小助手</title>
+    <title>Excel 函数效率手册</title>
     <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        .card:hover { transform: translateY(-3px); transition: all 0.3s ease; }
+    </style>
 </head>
-<body class="bg-gray-50 min-h-screen p-5">
-    <div class="max-w-4xl mx-auto">
-        <header class="mb-8 text-center">
-            <h1 class="text-3xl font-bold text-green-600">Excel Master Tools</h1>
-            <p class="text-gray-500">点击公式即可自动复制</p>
-        </header>
-        <div id="grid" class="grid grid-cols-1 md:grid-cols-2 gap-6">
+<body class="bg-gray-100 min-h-screen pb-10">
+    <nav class="bg-green-600 text-white shadow-md p-4 sticky top-0 z-10">
+        <div class="container mx-auto flex flex-col md:flex-row justify-between items-center gap-4">
+            <h1 class="text-xl font-bold italic">Excel Master Helper</h1>
+            <input type="text" id="searchInput" placeholder="搜索函数（如：查找、日期）..." 
+                class="w-full md:w-96 p-2 rounded-lg text-gray-800 outline-none focus:ring-2 focus:ring-yellow-400">
+        </div>
+    </nav>
+
+    <main class="container mx-auto px-4 mt-8">
+        <div id="functionGrid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             </div>
-    </div>
+    </main>
 
     <script>
-        const excelFunctions = [
-            { name: 'XLOOKUP', desc: '全能查找王，支持逆向查找。', syntax: '=XLOOKUP(查找值, 查找区, 结果区)' },
-            { name: 'VLOOKUP', desc: '纵向查找，匹配数据必备。', syntax: '=VLOOKUP(值, 区域, 列号, 0)' },
-            { name: 'SUMIFS', desc: '多条件求和。', syntax: '=SUMIFS(求和区, 条件区, 条件)' },
-            { name: 'DATEDIF', desc: '计算工龄、年龄。', syntax: '=DATEDIF(开始日, 结束日, "Y")' }
+        const functions = [
+            // 查找引用
+            { n: 'XLOOKUP', c: '查找/引用', d: '全能查找，支持逆向匹配。', s: '=XLOOKUP(查找值, 查找区域, 返回区域)' },
+            { n: 'VLOOKUP', c: '查找/引用', d: '纵向查找，职场出镜率最高。', s: '=VLOOKUP(查找值, 区域, 列号, 0)' },
+            { n: 'INDEX+MATCH', c: '查找/引用', d: '黄金组合，解决 VLOOKUP 无法左搜的问题。', s: '=INDEX(结果区, MATCH(值, 查找区, 0))' },
+            { n: 'UNIQUE', c: '查找/引用', d: '一键提取唯一值（去重）。', s: '=UNIQUE(区域)' },
+            { n: 'FILTER', c: '查找/引用', d: '动态筛选符合条件的全部数据。', s: '=FILTER(区域, 条件)' },
+            { n: 'INDIRECT', c: '查找/引用', d: '将文本转为引用，常用于多级下拉菜单。', s: '=INDIRECT(文本地址)' },
+            { n: 'OFFSET', c: '查找/引用', d: '以参照物为基准进行偏移，动态图表核心。', s: '=OFFSET(参照, 行偏, 列偏, 高, 宽)' },
+            
+            // 统计数学
+            { n: 'SUMIFS', c: '统计/数学', d: '多条件求和。', s: '=SUMIFS(求和区, 条件区1, 条件1...)' },
+            { n: 'COUNTIFS', c: '统计/数学', d: '多条件计数，用于排班、考勤。', s: '=COUNTIFS(区域1, 条件1...)' },
+            { n: 'AVERAGEIFS', c: '统计/数学', d: '多条件平均值。', s: '=AVERAGEIFS(均值区, 区域1, 条件1...)' },
+            { n: 'SUMPRODUCT', c: '统计/数学', d: '乘积求和，可处理数组逻辑。', s: '=SUMPRODUCT(区域1 * 区域2)' },
+            { n: 'SUBTOTAL', c: '统计/数学', d: '分类汇总，可忽略隐藏行。', s: '=SUBTOTAL(9, 区域)' },
+            { n: 'ROUND', c: '统计/数学', d: '四舍五入到指定位数。', s: '=ROUND(数值, 2)' },
+            { n: 'RANK.EQ', c: '统计/数学', d: '计算数值在一组数中的排名。', s: '=RANK.EQ(值, 区域)' },
+
+            // 逻辑文本
+            { n: 'IF', c: '逻辑/文本', d: '如果...那么...的基础逻辑。', s: '=IF(条件, 真值, 假值)' },
+            { n: 'IFS', c: '逻辑/文本', d: '多条件判断，告别 IF 嵌套。', s: '=IFS(条件1, 值1, 条件2, 值2...)' },
+            { n: 'IFERROR', c: '逻辑/文本', d: '美化错误值（如 #N/A）。', s: '=IFERROR(原公式, "显示文本")' },
+            { n: 'TEXT', c: '逻辑/文本', d: '万能格式转换（如日期转星期）。', s: '=TEXT(日期, "aaaa")' },
+            { n: 'MID', c: '逻辑/文本', d: '中间提取（如提取身份证生日）。', s: '=MID(文本, 起始, 长度)' },
+            { n: 'TEXTJOIN', c: '逻辑/文本', d: '用指定分隔符连接多个文本。', s: '=TEXTJOIN(",", 1, 区域)' },
+            { n: 'SUBSTITUTE', c: '逻辑/文本', d: '替换指定文本。', s: '=SUBSTITUTE(文本, 旧字符, 新字符)' },
+            { n: 'TRIM', c: '逻辑/文本', d: '剔除多余空格。', s: '=TRIM(文本)' },
+
+            // 日期时间
+            { n: 'DATEDIF', c: '日期/时间', d: '计算两个日期差（算年龄/工龄）。', s: '=DATEDIF(开始, 结束, "Y")' },
+            { n: 'EOMONTH', c: '日期/时间', d: '返回某月最后一天的日期。', s: '=EOMONTH(日期, 0)' },
+            { n: 'NETWORKDAYS', c: '日期/时间', d: '计算两个日期间的工作日。', s: '=NETWORKDAYS(开始, 结束)' },
+            { n: 'TODAY', c: '日期/时间', d: '返回当前日期。', s: '=TODAY()' }
         ];
 
-        const grid = document.getElementById('grid');
-        excelFunctions.forEach(f => {
-            const card = document.createElement('div');
-            card.className = 'bg-white p-6 rounded-xl shadow-md border-l-4 border-green-500';
-            card.innerHTML = `
-                <h3 class="text-xl font-bold text-blue-600 mb-2">${f.name}</h3>
-                <p class="text-gray-600 text-sm mb-4">${f.desc}</p>
-                <code class="block bg-gray-100 p-2 text-pink-600 rounded cursor-pointer hover:bg-gray-200" 
-                      onclick="navigator.clipboard.writeText('${f.syntax}');alert('复制成功！')">${f.syntax}</code>
-            `;
-            grid.appendChild(card);
-        });
+        // 更多函数可以在此处继续添加...
+
+        const grid = document.getElementById('functionGrid');
+        const searchInput = document.getElementById('searchInput');
+
+        function render(keyword = '') {
+            grid.innerHTML = '';
+            const filtered = functions.filter(f => 
+                f.n.toLowerCase().includes(keyword.toLowerCase()) || 
+                f.d.includes(keyword) || 
+                f.c.includes(keyword)
+            );
+
+            filtered.forEach(f => {
+                const div = document.createElement('div');
+                div.className = 'card bg-white p-6 rounded-xl shadow-sm border-l-4 border-green-500';
+                div.innerHTML = `
+                    <div class="flex justify-between items-center mb-2">
+                        <span class="text-xs font-semibold text-green-600 bg-green-50 px-2 py-1 rounded">${f.c}</span>
+                        <h2 class="text-xl font-bold text-gray-800">${f.n}</h2>
+                    </div>
+                    <p class="text-gray-500 text-sm mb-4 h-10 overflow-hidden">${f.d}</p>
+                    <div class="bg-gray-50 p-2 rounded border border-dashed border-gray-300 group relative cursor-pointer" onclick="copy('${f.s}')">
+                        <code class="text-red-500 text-xs break-all">${f.s}</code>
+                        <span class="absolute right-2 top-1 text-[10px] text-gray-400 group-hover:text-green-500">点击复制</span>
+                    </div>
+                `;
+                grid.appendChild(div);
+            });
+        }
+
+        window.copy = (text) => {
+            navigator.clipboard.writeText(text);
+            const notice = document.createElement('div');
+            notice.className = "fixed bottom-10 left-1/2 -translate-x-1/2 bg-black text-white px-4 py-2 rounded-full text-sm";
+            notice.innerText = "公式已复制到剪贴板！";
+            document.body.appendChild(notice);
+            setTimeout(() => notice.remove(), 2000);
+        };
+
+        searchInput.addEventListener('input', (e) => render(e.target.value));
+        render(); // 初始化加载
     </script>
 </body>
 </html>
