@@ -1,123 +1,44 @@
-<!DOCTYPE html>
-<html lang="zh-CN">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Excel 函数小助手 - 快速查阅与复制</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <style>
-        .card-hover:hover { transform: translateY(-2px); transition: all 0.2s; }
-    </style>
-</head>
-<body class="bg-gray-50 min-h-screen">
-
-    <nav class="bg-blue-600 text-white shadow-lg p-4">
-        <div class="container mx-auto flex justify-between items-center">
-            <h1 class="text-xl font-bold italic">Excel Master Tools</h1>
-            <span class="text-sm opacity-80">2026 效率版</span>
-        </div>
-    </nav>
-
-    <main class="container mx-auto px-4 py-8">
-        
-        <div class="bg-white rounded-xl shadow-sm p-6 mb-8">
-            <div class="flex flex-col md:flex-row gap-4">
-                <input type="text" id="searchInput" placeholder="搜索函数名或功能（如：查找、求和）..." 
-                    class="flex-1 p-3 border border-gray-200 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none">
-                <select id="categorySelect" class="p-3 border border-gray-200 rounded-lg bg-white">
-                    <option value="all">所有分类</option>
-                    <option value="查找/引用">查找/引用</option>
-                    <option value="统计/数学">统计/数学</option>
-                    <option value="逻辑/文本">逻辑/文本</option>
-                </select>
-            </div>
-        </div>
-
-        <div id="functionGrid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            </div>
-    </main>
-
-    <script>
-        // 1. 函数数据库 (此处可以不断扩充)
-        const excelFunctions = [
-            { const excelFunctions = [
-            // --- 查找与引用 (10个) ---
+const excelFunctions = [
+            // --- 查找与引用 ---
             { name: 'XLOOKUP', category: '查找/引用', desc: '全能查找王，支持逆向、多列查找。', syntax: '=XLOOKUP(查找值, 查找数组, 返回数组)', tip: 'Office 365 专属，从此告别 VLOOKUP。' },
-            { name: 'VLOOKUP', category: '查找/引用', desc: '纵向查找，职场必备。', syntax: '=VLOOKUP(查找值, 区域, 列号, [0])', tip: '记得第四个参数填0代表精确匹配。' },
-            { name: 'INDEX', category: '查找/引用', desc: '返回表格或区域中的值。', syntax: '=INDEX(区域, 行号, [列号])', tip: '常与 MATCH 函数“黄金搭档”使用。' },
-            { name: 'MATCH', category: '查找/引用', desc: '返回指定值在区域中的相对位置。', syntax: '=MATCH(查找值, 区域, [0])', tip: '它返回的是“第几个”，而不是具体内容。' },
-            { name: 'OFFSET', category: '查找/引用', desc: '以指定引用为参照系，偏移出新区域。', syntax: '=OFFSET(参照, 行偏移, 列偏移, [高], [宽])', tip: '动态图表的灵魂函数。' },
-            { name: 'INDIRECT', category: '查找/引用', desc: '将文本字符串变为真实的引用。', syntax: '=INDIRECT(文本地址)', tip: '常用于制作多级下拉菜单。' },
-            { name: 'HLOOKUP', category: '查找/引用', desc: '横向查找（水平查找）。', syntax: '=HLOOKUP(查找值, 区域, 行号, [0])', tip: '数据横着放时用它。' },
-            { name: 'UNIQUE', category: '查找/引用', desc: '提取列表中的唯一值（去重）。', syntax: '=UNIQUE(区域)', tip: '动态数组函数，会自动溢出结果。' },
-            { name: 'SORT', category: '查找/引用', desc: '对区域内容进行排序。', syntax: '=SORT(区域, [索引], [顺序])', tip: '1为升序，-1为降序。' },
-            { name: 'FILTER', category: '查找/引用', desc: '根据条件筛选数据。', syntax: '=FILTER(区域, 条件, [空值返回])', tip: '配合 UNIQUE 使用效果极佳。' },
+            { name: 'VLOOKUP', category: '查找/引用', desc: '纵向查找，职场必备。', syntax: '=VLOOKUP(查找值, 区域, 列号, 0)', tip: '记得第四个参数填0代表精确匹配。' },
+            { name: 'INDEX', category: '查找/引用', desc: '返回表格或区域中的值。', syntax: '=INDEX(区域, 行号, [列号])', tip: '常与 MATCH 搭配使用。' },
+            { name: 'MATCH', category: '查找/引用', desc: '返回指定值在区域中的相对位置。', syntax: '=MATCH(查找值, 区域, 0)', tip: '返回的是序号而非内容。' },
+            { name: 'OFFSET', category: '查找/引用', desc: '以指定引用为参照系，偏移出新区域。', syntax: '=OFFSET(参照, 行偏移, 列偏移, 高, 宽)', tip: '动态图表的灵魂。' },
+            { name: 'INDIRECT', category: '查找/引用', desc: '将文本字符串变为真实的引用。', syntax: '=INDIRECT(文本地址)', tip: '常用于多级下拉菜单。' },
+            { name: 'UNIQUE', category: '查找/引用', desc: '提取唯一值（去重）。', syntax: '=UNIQUE(区域)', tip: '动态数组函数，自动溢出。' },
+            { name: 'FILTER', category: '查找/引用', desc: '根据条件筛选数据。', syntax: '=FILTER(区域, 条件)', tip: '配合 UNIQUE 使用效果极佳。' },
+            { name: 'SORT', category: '查找/引用', desc: '对区域内容排序。', syntax: '=SORT(区域, 索引, 顺序)', tip: '1为升序，-1为降序。' },
+            { name: 'HLOOKUP', category: '查找/引用', desc: '横向查找。', syntax: '=HLOOKUP(值, 区域, 行号, 0)', tip: '数据横着放时使用。' },
 
-            // --- 统计与数学 (15个) ---
-            { name: 'SUMIFS', category: '统计/数学', desc: '多条件求和。', syntax: '=SUMIFS(求和区, 条件区1, 条件1, ...)', tip: '求和区在最前面，别记反了。' },
-            { name: 'COUNTIFS', category: '统计/数学', desc: '多条件计数。', syntax: '=COUNTIFS(条件区1, 条件1, ...)', tip: '职场排班、考勤统计神器。' },
-            { name: 'AVERAGEIFS', category: '统计/数学', desc: '多条件计算平均值。', syntax: '=AVERAGEIFS(均值区, 条件区1, 条件1, ...)', tip: '逻辑与 SUMIFS 完全一致。' },
-            { name: 'MAXIFS', category: '统计/数学', desc: '返回满足条件的最高值。', syntax: '=MAXIFS(最大值区, 条件区1, 条件1, ...)', tip: '找最高分、最高销售额。' },
-            { name: 'MINIFS', category: '统计/数学', desc: '返回满足条件的最小值。', syntax: '=MINIFS(最小值区, 条件区1, 条件1, ...)', tip: '找最低成本。' },
-            { name: 'SUMPRODUCT', category: '统计/数学', desc: '乘积之和。', syntax: '=SUMPRODUCT(数组1, 数组2)', tip: '万能函数，可替代 SUMIFS。' },
-            { name: 'ROUND', category: '统计/数学', desc: '按指定位数四舍五入。', syntax: '=ROUND(数值, 小数位数)', tip: '0表示取整。' },
-            { name: 'INT', category: '统计/数学', desc: '向下取整。', syntax: '=INT(数值)', tip: '直接舍弃小数位。' },
-            { name: 'MOD', category: '统计/数学', desc: '取余数。', syntax: '=MOD(被除数, 除数)', tip: '常用于判断奇偶性（被2整除）。' },
-            { name: 'ABS', category: '统计/数学', desc: '求绝对值。', syntax: '=ABS(数值)', tip: '负数变正数。' },
-            { name: 'SUBTOTAL', category: '统计/数学', desc: '返回列表中的分类汇总。', syntax: '=SUBTOTAL(代码, 区域)', tip: '代码9代表求和，109代表忽略隐藏行求和。' },
-            { name: 'AGGREGATE', category: '统计/数学', desc: '忽略错误值的汇总。', syntax: '=AGGREGATE(代码, 选项, 区域)', tip: '比 SUBTOTAL 更强大的汇总利器。' },
-            { name: 'RANDBETWEEN', category: '统计/数学', desc: '生成指定范围的随机整数。', syntax: '=RANDBETWEEN(底数, 顶数)', tip: '按 F9 键会重新生成。' },
-            { name: 'RANK.EQ', category: '统计/数学', desc: '计算数值的排名。', syntax: '=RANK.EQ(数值, 引用区域, [顺序])', tip: '0或省略为降序。' },
-            { name: 'PRODUCT', category: '统计/数学', desc: '将所有参数相乘。', syntax: '=PRODUCT(数值1, 数值2...)', tip: '相当于一串乘号。' },
+            // --- 统计与数学 ---
+            { name: 'SUMIFS', category: '统计/数学', desc: '多条件求和。', syntax: '=SUMIFS(求和区, 条件区1, 条件1...)', tip: '求和区在第一位。' },
+            { name: 'COUNTIFS', category: '统计/数学', desc: '多条件计数。', syntax: '=COUNTIFS(条件区1, 条件1...)', tip: '统计个数神器。' },
+            { name: 'AVERAGEIFS', category: '统计/数学', desc: '多条件平均值。', syntax: '=AVERAGEIFS(均值区, 条件区1, 条件1...)', tip: '逻辑同 SUMIFS。' },
+            { name: 'SUMPRODUCT', category: '统计/数学', desc: '乘积之和。', syntax: '=SUMPRODUCT(数组1, 数组2)', tip: '万能函数，可做复杂多条件统计。' },
+            { name: 'SUBTOTAL', category: '统计/数学', desc: '分类汇总。', syntax: '=SUBTOTAL(代码, 区域)', tip: '代码9求和，109忽略隐藏行。' },
+            { name: 'ROUND', category: '统计/数学', desc: '四舍五入。', syntax: '=ROUND(数值, 位数)', tip: '0表示取整。' },
+            { name: 'INT', category: '统计/数学', desc: '向下取整。', syntax: '=INT(数值)', tip: '直接舍弃小数。' },
+            { name: 'MOD', category: '统计/数学', desc: '取余数。', syntax: '=MOD(被除数, 除数)', tip: '常用于判断奇偶。' },
+            { name: 'RANK.EQ', category: '统计/数学', desc: '排名。', syntax: '=RANK.EQ(值, 区域, 顺序)', tip: '计算名次。' },
+            { name: 'ABS', category: '统计/数学', desc: '绝对值。', syntax: '=ABS(数值)', tip: '负数转正数。' },
 
-            // --- 逻辑与文本 (15个) ---
-            { name: 'IF', category: '逻辑/文本', desc: '条件判断。', syntax: '=IF(条件, 真值, 假值)', tip: '可以多层嵌套使用。' },
-            { name: 'IFS', category: '逻辑/文本', desc: '多条件判断。', syntax: '=IFS(条件1, 值1, 条件2, 值2...)', tip: '解决 IF 嵌套过多的烦恼。' },
-            { name: 'AND', category: '逻辑/文本', desc: '所有条件为真才返回真。', syntax: '=AND(条件1, 条件2...)', tip: '逻辑门里的“且”。' },
-            { name: 'OR', category: '逻辑/文本', desc: '任一条件为真即返回真。', syntax: '=OR(条件1, 条件2...)', tip: '逻辑门里的“或”。' },
-            { name: 'LEFT/RIGHT', category: '逻辑/文本', desc: '从左/右提取字符。', syntax: '=LEFT(字符串, 字符数)', tip: '提取身份证前几位常用。' },
-            { name: 'MID', category: '逻辑/文本', desc: '从中间提取字符。', syntax: '=MID(字符串, 开始位置, 长度)', tip: '提取出生日期的核心函数。' },
-            { name: 'LEN', category: '逻辑/文本', desc: '计算字符串长度。', syntax: '=LEN(字符串)', tip: '空格也会计算在内。' },
-            { name: 'TEXT', category: '逻辑/文本', desc: '数值格式化转文本。', syntax: '=TEXT(数值, "格式代码")', tip: '万能转换，如将日期转星期。' },
-            { name: 'TEXTJOIN', category: '逻辑/文本', desc: '带分隔符的文本合并。', syntax: '=TEXTJOIN(分隔符, 忽略空值, 文本1...)', tip: '批量合并姓名的神器。' },
-            { name: 'SUBSTITUTE', category: '逻辑/文本', desc: '替换文本。', syntax: '=SUBSTITUTE(文本, 旧文本, 新文本)', tip: '比“查找替换”功能更灵活。' },
-            { name: 'REPLACE', category: '逻辑/文本', desc: '按位置替换文本。', syntax: '=REPLACE(原文本, 位置, 长度, 新文本)', tip: '常用于给电话号码打马赛克。' },
-            { name: 'FIND', category: '逻辑/文本', desc: '查找字符位置。', syntax: '=FIND(找什么, 在哪找)', tip: '区分大小写，不支持通配符。' },
-            { name: 'UPPER/LOWER', category: '逻辑/文本', desc: '大小写转换。', syntax: '=UPPER(文本)', tip: '英文处理常用。' },
-            { name: 'TRIM', category: '逻辑/文本', desc: '清除多余空格。', syntax: '=TRIM(文本)', tip: '只保留单词间的单个空格。' },
-            { name: 'CONCAT', category: '逻辑/文本', desc: '连接多个文本。', syntax: '=CONCAT(文本1...)', tip: '支持区域选择。' },
+            // --- 逻辑与文本 ---
+            { name: 'IF', category: '逻辑/文本', desc: '条件判断。', syntax: '=IF(条件, 真值, 假值)', tip: '基础逻辑核心。' },
+            { name: 'IFS', category: '逻辑/文本', desc: '多条件判断。', syntax: '=IFS(条件1, 值1...)', tip: '替代多重 IF 嵌套。' },
+            { name: 'IFERROR', category: '逻辑/文本', desc: '容错处理。', syntax: '=IFERROR(公式, 错误时显示)', tip: '隐藏 #N/A 必备。' },
+            { name: 'LEFT/RIGHT', category: '逻辑/文本', desc: '左右截取。', syntax: '=LEFT(文本, 长度)', tip: '提取前缀或后缀。' },
+            { name: 'MID', category: '逻辑/文本', desc: '中间截取。', syntax: '=MID(文本, 起始, 长度)', tip: '身份证提生日必备。' },
+            { name: 'LEN', category: '逻辑/文本', desc: '字符长度。', syntax: '=LEN(文本)', tip: '空格也计入长度。' },
+            { name: 'TEXT', category: '逻辑/文本', desc: '格式化转文本。', syntax: '=TEXT(值, "格式")', tip: '日期转周几神器。' },
+            { name: 'TEXTJOIN', category: '逻辑/文本', desc: '带分隔符连接。', syntax: '=TEXTJOIN(",", 1, 文本1...)', tip: '批量合并姓名首选。' },
+            { name: 'SUBSTITUTE', category: '逻辑/文本', desc: '替换文本。', syntax: '=SUBSTITUTE(文本, 旧文本, 新文本)', tip: '比查找替换更灵活。' },
+            { name: 'REPLACE', category: '逻辑/文本', desc: '位置替换。', syntax: '=REPLACE(文本, 起始, 长度, 新文本)', tip: '打马赛克常用。' },
 
-            // --- 日期与时间 (10个) ---
-            { name: 'TODAY', category: '日期/时间', desc: '返回今天日期。', syntax: '=TODAY()', tip: '没有参数，随系统时间更新。' },
-            { name: 'NOW', category: '日期/时间', desc: '返回当前日期和时间。', syntax: '=NOW()', tip: '精确到秒。' },
-            { name: 'DATEDIF', category: '日期/时间', desc: '计算两个日期间的差值。', syntax: '=DATEDIF(开始日, 结束日, "代码")', tip: '代码"Y"算岁数，"M"算月份。' },
-            { name: 'EOMONTH', category: '日期/时间', desc: '返回某月最后一天的日期。', syntax: '=EOMONTH(日期, 偏移月)', tip: '计算财务账期神器。' },
-            { name: 'EDATE', category: '日期/时间', desc: '返回几个月后的日期。', syntax: '=EDATE(日期, 月数)', tip: '算合同到期日常用。' },
-            { name: 'WEEKDAY', category: '日期/时间', desc: '返回星期几。', syntax: '=WEEKDAY(日期, 2)', tip: '第二个参数建议填2，代表周一为1。' },
-            { name: 'YEAR/MONTH/DAY', category: '日期/时间', desc: '提取年/月/日。', syntax: '=YEAR(日期)', tip: '基础拆解函数。' },
-            { name: 'NETWORKDAYS', category: '日期/时间', desc: '计算工作日天数。', syntax: '=NETWORKDAYS(开始, 结束, [假期])', tip: '自动扣除周六日。' },
-            { name: 'WORKDAY', category: '日期/时间', desc: '计算N个工作日后的日期。', syntax: '=WORKDAY(开始, 天数)', tip: '项目进度管理常用。' },
-            { name: 'DATE', category: '日期/时间', desc: '合并年、月、日为日期。', syntax: '=DATE(年, 月, 日)', tip: '安全拼接日期的方法。' }
-        ]; }
+            // --- 日期与时间 ---
+            { name: 'TODAY', category: '日期/时间', desc: '今天日期。', syntax: '=TODAY()', tip: '动态更新。' },
+            { name: 'DATEDIF', category: '日期/时间', desc: '计算间隔。', syntax: '=DATEDIF(开始, 结束, "Y")', tip: '算年龄、工龄神器。' },
+            { name: 'EOMONTH', category: '日期/时间', desc: '月底日期。', syntax: '=EOMONTH(日期, 0)', tip: '算财务结算日。' },
+            { name: 'WEEKDAY', category: '日期/时间', desc: '星期几。', syntax: '=WEEKDAY(日期, 2)', tip: '2代表周一为起始。' },
+            { name: 'NETWORKDAYS', category: '日期/时间', desc: '工作日天数。', syntax: '=NETWORKDAYS(开始, 结束)', tip: '自动扣除周末。' }
         ];
-
-        const grid = document.getElementById('functionGrid');
-        const searchInput = document.getElementById('searchInput');
-        const categorySelect = document.getElementById('categorySelect');
-
-        // 2. 渲染函数
-        function renderFunctions(filterText = '', filterCat = 'all') {
-            grid.innerHTML = '';
-            const filtered = excelFunctions.filter(f => {
-                const matchText = f.name.toLowerCase().includes(filterText.toLowerCase()) || f.desc.includes(filterText);
-                const matchCat = filterCat === 'all' || f.category === filterCat;
-                return matchText && matchCat;
-            });
-
-            filtered.forEach(f => {
-                const card = document.createElement('div');
-                card.className = 'bg-white p-6 rounded-xl shadow-sm border border-gray-100 card-hover';
-                card.innerHTML = `
-                    <div class="flex justify-between items-start mb-3">
-                        <h3 class="text-xl font-bold text-blue-600">${f.name}</h3>
-                        <span class="text-xs bg-blue-50 text-blue-500
